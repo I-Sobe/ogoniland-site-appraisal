@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ogoniland-appraisal"
+version = "0.1.0"
+requires-python = ">=3.11"
+# Unpinned on purpose: pins are added only once an environment has been proven
+# to build under the Application Control policy.
+dependencies = ["pandas", "numpy"]
+
+[project.optional-dependencies]
+dev = ["pytest", "jupyterlab"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

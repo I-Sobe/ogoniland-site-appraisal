@@ -1,0 +1,1 @@
+"""Source–pathway–receptor construction."""
