@@ -41,3 +41,9 @@ Each entry follows the format: `## [YYYY-MM-DD] Session N — title`, then **Cha
 **Changed:** data/raw/ — 79 PDFs downloaded (449,939,114 bytes); gitignored, not staged
 **Untested:** No PDF was opened or parsed; only the %PDF header, size and sha256 were checked. Retry and backoff paths did not trigger, so they are unexercised.
 **Surprised:** All four duplicate-site pairs (008-010, 005-002, 010-009, 008-003) are byte-identical. The completeness sweep found 72 Ogoniland-titled items, 68 in the seed; the other four (Geology of Ogoniland, UNEP In Ogoniland Newsletter August 2011, Ogoniland poster, Environmental Survey of Ogoniland Project Document) are not site fact sheets and were not added. 11 seed items (factsheet_05, factsheet_55, the main report and seven report parts) are not in the owning collection's listing; they were found via the main report record or are mapped from elsewhere.
+
+## [2026-11-15: 00:33:44] Session 3b — Clean-clone-safe raw-file test
+**Changed:** tests/test_manifest.py — test_6_files_exist skips when data/raw/ is absent or holds no PDF; otherwise still requires every manifest local_filename to exist
+**Changed:** docs/CHANGELOG.md — this entry
+**Untested:** Behaviour on a real fresh clone was simulated by moving the PDFs out of data/raw/, not by cloning.
+**Surprised:** Renaming data/raw/ away entirely fails tests/test_structure.py test_1 (it requires the directory, which a real clone keeps via .gitkeep); the faithful case, PDFs removed with .gitkeep kept, passes with one skip.

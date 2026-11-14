@@ -53,6 +53,8 @@ class TestManifest(unittest.TestCase):
         self.assertEqual(len(rows), len(self.docs))
 
     def test_6_files_exist(self):
+        if not RAW.is_dir() or not any(RAW.glob("*.pdf")):
+            self.skipTest("raw sources have not been fetched")
         for d in self.docs:
             self.assertTrue((RAW / d["local_filename"]).is_file(), d["local_filename"])
 
