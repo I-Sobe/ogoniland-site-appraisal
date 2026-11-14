@@ -32,3 +32,12 @@ Each entry follows the format: `## [YYYY-MM-DD] Session N — title`, then **Cha
 **Changed:** docs/CHANGELOG.md — Session 2 and 2b entries
 **Untested:** The bitstream-name clause of the widened filter was only applied to items whose title already contained fact sheet/factsheet (fetching bitstreams for all 9,273 items was impractical); this is logically equivalent for the AND-ed filter.
 **Surprised:** The specified code pattern \d{3}-\d{3} matches year ranges such as "2024-2029", so the first widened run appended 8 unrelated Ecosystem-based Adaptation project fact sheets (Tanzania, Jordan, Laos, Djibouti, Nepal/Mauritania/Seychelles, Lake Victoria, Nepal, CityAdapt); those were discarded and the pattern given digit boundaries, after which the widened filter found 67 collection records and no new ones (the collection now lists 9,273 items, down from 9,277). The 2 remaining seed fact sheets came from the main report record's related list. The changelog test asserting exactly one entry could not hold with three entries and was relaxed.
+
+## [2026-11-15: 00:25:38] Session 3 — Source acquisition and provenance manifest
+**Changed:** src/ogoniland_appraisal/sources/fetch.py — created; fetch_all, verify, duplicate-pair report
+**Changed:** tests/test_manifest.py — created
+**Changed:** docs/sources_manifest.json — created; 79 documents with sha256, bytes, retrieved_utc
+**Changed:** docs/SOURCES.md — regenerated from the manifest (replaces the Session 1 stub)
+**Changed:** data/raw/ — 79 PDFs downloaded (449,939,114 bytes); gitignored, not staged
+**Untested:** No PDF was opened or parsed; only the %PDF header, size and sha256 were checked. Retry and backoff paths did not trigger, so they are unexercised.
+**Surprised:** All four duplicate-site pairs (008-010, 005-002, 010-009, 008-003) are byte-identical. The completeness sweep found 72 Ogoniland-titled items, 68 in the seed; the other four (Geology of Ogoniland, UNEP In Ogoniland Newsletter August 2011, Ogoniland poster, Environmental Survey of Ogoniland Project Document) are not site fact sheets and were not added. 11 seed items (factsheet_05, factsheet_55, the main report and seven report parts) are not in the owning collection's listing; they were found via the main report record or are mapped from elsewhere.
