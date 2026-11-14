@@ -1,1 +1,2 @@
-Work in progress, shipping January
+Work in progress, shipping January.
+
