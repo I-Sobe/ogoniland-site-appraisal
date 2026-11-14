@@ -6,9 +6,8 @@ build-backend = "setuptools.build_meta"
 name = "ogoniland-appraisal"
 version = "0.1.0"
 requires-python = ">=3.11"
-# Unpinned on purpose: pins are added only once an environment has been proven
-# to build under the Application Control policy.
-dependencies = ["pandas", "numpy"]
+# Pins live in requirements-lock.txt; this file declares minimums only.
+dependencies = ["pandas>=3.1", "numpy>=2.5", "requests>=2.32", "beautifulsoup4>=4.13"]
 
 [project.optional-dependencies]
 dev = ["pytest", "jupyterlab"]

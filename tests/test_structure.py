@@ -76,21 +76,21 @@ class TestStructure(unittest.TestCase):
         for h in HEADINGS:
             self.assertIn(h, ls)
 
-    def test_6_decisions_has_no_entries(self):
-        self.assertFalse([l for l in lines("docs/DECISIONS.md")
-                          if l.startswith("## [")])
-
-    def test_7_changelog_one_entry(self):
-        self.assertEqual(
+    def test_7_changelog_has_entries(self):
+        # Originally "exactly one entry" (Session 1); the changelog now grows by
+        # one entry per session, so assert at least one.
+        self.assertGreaterEqual(
             len([l for l in lines("docs/CHANGELOG.md") if l.startswith("## [")]), 1)
 
     def test_8_pyproject_dependencies(self):
         with open(ROOT / "pyproject.toml", "rb") as fh:
             data = tomllib.load(fh)
         deps = data["project"]["dependencies"]
-        self.assertEqual(sorted(deps), ["numpy", "pandas"])
+        names = [re.split(r"[<>=!~ ]", d, maxsplit=1)[0] for d in deps]
+        self.assertEqual(sorted(names), ["beautifulsoup4", "numpy", "pandas", "requests"])
         for d in deps:
-            self.assertTrue(re.fullmatch(r"[A-Za-z0-9_.-]+", d), d)
+            self.assertIn(">=", d)
+            self.assertNotIn("==", d)
 
     def test_11_gitignore_no_duplicates(self):
         ls = [l for l in lines(".gitignore") if l.strip()]

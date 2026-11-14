@@ -3,7 +3,7 @@
 Instructions for any Claude Code session working in this repository.
 
 ## Scope discipline
-You implement one bounded task spec per session. You touch only the files that spec lists. Work that is not in the spec is reported, not done.
+You implement one bounded task spec per session. You touch only the files that spec lists. Work that is not in the spec is reported, not done. `docs/CHANGELOG.md` is a standing exception to every task spec's file list. You always append your session entry to it, whether or not the spec names it.
 
 ## What you do not decide
 Screening thresholds, CSM logic, delineation verdicts, technology selection and any regulatory interpretation are settled in chat and handed to you as parameters. You never choose one.
@@ -30,7 +30,7 @@ You own `docs/CHANGELOG.md` and write to it at the close of every session. You n
 Before ending any session, append one entry to `docs/CHANGELOG.md` in exactly this format:
 
 ```
-## [YYYY-MM-DD] Session N — <short title>
+## [YYYY-MM-DD: hh:mm:ss] Session N — <short title>
 **Changed:** <files created or modified, one line each>
 **Untested:** <what was not verified, and why>
 **Surprised:** <anything that did not behave as the spec assumed; "nothing" if so>
