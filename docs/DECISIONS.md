@@ -196,3 +196,108 @@ supports. Reproduction from a clean clone depends on the sha256, not on the URL
 continuing to resolve.
 **Rejected:** recording only a single generation timestamp for the whole
 manifest (loses per-document retrieval dates if acquisition spans sessions).
+
+## [2026-11-15: 00:35:00] Duplicate fact-sheet records are byte-identical
+**Decision:** All four duplicated site codes — 008-010, 005-002, 010-009,
+008-003 — resolve to byte-identical PDFs. Both records of each pair stay in the
+seed and the manifest; extraction deduplicates by sha256 and treats the pair as
+one site.
+**Reasoning:** Identical hashes prove a cataloguing artefact rather than two
+documents, so no judgement is needed about which record wins. Keeping both is a
+true record of what the repository publishes; dropping one would make the
+manifest disagree with its source.
+**Supersedes:** the 2026-11-14 entry "Four sites hold two fact-sheet records
+each" in its open question only. The record counts in that entry stand.
+
+## [2026-11-15: 00:35:00] Discovery is closed
+**Decision:** The owning collection holds 72 Ogoniland-titled items; 68 are in
+the seed and the four outside it are a geology paper, a newsletter, a poster and
+a project document. Discovery is complete and is not revisited.
+**Reasoning:** The title-only sweep is strictly broader than every filter used
+previously, so nothing a narrower run could find remains unfound. Final figures:
+67 records in the collection, matching UNEP's published figure; 69 fact sheets in
+the seed, the extra two reached via the main report record; 4 exact duplicates;
+65 distinct site codes.
+**Open:** whether 65 is the site count the main report's tables use. Resolved in
+week 2, not before.
+
+## [2026-11-15: 00:35:00] Tests must pass on a clean clone
+**Decision:** Any test depending on gitignored content skips when that content is
+absent and asserts when it is present. Applied first to the manifest's
+file-existence check.
+**Reasoning:** The repository is the week 8 public deliverable and its suite is
+the first thing a reviewer runs. A suite that fails on a fresh clone reads as a
+broken project, and training the habit of relaxing tests to make a suite green is
+worse than the failing test itself.
+
+## [2026-11-15: 10:20:00] Regulatory sources registered with graded provenance
+**Decision:** EGASPIN 2002, EGASPIN 2018 and the NUPRC Upstream Petroleum
+Environmental Remediation Regulations 2024 enter the manifest as
+`kind: "regulation"` with `retrieval_method: "manual"`, each carrying its source
+URL, retrieval date and a provenance note stating the strength of its source.
+**Reasoning:** Every screening value cites one of these, so the regulatory end of
+the provenance chain cannot rest on unrecorded files. The three differ sharply in
+authority — NUPRC's own server, a law-firm mirror, and a document-sharing upload
+— and a manifest that recorded them identically would misrepresent what the
+dataset rests on. A request for an official copy has been sent to NUPRC; if it
+arrives it supersedes the mirror.
+**Rejected:** excluding the 2018 copy for weak provenance (leaves the comparison
+instrument missing with no better copy available); recording all three without
+distinguishing their sources.
+
+## [2026-11-15: 10:20:00] EGASPIN 2002 is the primary screening instrument
+**Decision:** `screening_values.csv` is populated first from EGASPIN 2002 Part
+VIII-F. EGASPIN 2018 is added as a second `instrument` for comparison. The
+delineation diagnostic runs against 2002.
+**Reasoning:** UNEP sampled in 2009-2011 and assessed against the 2002 edition,
+so screening against 2002 reproduces their published findings and makes the
+dataset checkable against its source. Screening primarily against 2018 would
+produce exceedance counts that diverge from UNEP's with no stated reason.
+Divergence between the two editions is a reportable finding, not a defect.
+**Rejected:** 2018 as primary (breaks reconciliation with UNEP); 2002 alone
+(ignores the edition in force today, which a partner-facing appraisal must
+address).
+
+## [2026-11-15: 11:20:00] Seed schema changes carry their test with them
+**Decision:** `tests/test_seed.py` is on the file list of every session that
+changes what a seed entry may contain. Registering `kind: "regulation"` entries
+splits its key, uuid-format and uuid-uniqueness checks by kind rather than
+relaxing them.
+**Reasoning:** That file encodes the seed's data contract, so a session changing
+the contract and omitting the test leaves Code to choose between a red suite and
+an unspecified edit — neither of which is its decision to make. Splitting by kind
+keeps every original assertion intact for the 79 fetched documents while
+admitting regulations, which legitimately have no repository UUIDs.
+**Rejected:** relaxing the checks for all entries (would let a malformed fetched
+entry through); committing with three failing tests (a red suite in the public
+deliverable); holding the commit (discards the session's verification work).
+
+## [2026-11-15: 11:30:00] Regulation URLs are provenance records, not fetch targets
+**Decision:** Entries with `kind: "regulation"` are exempt from the seed's
+URL-shape check and need only be https. The recorded URL is the page the
+document was retrieved from, even where that is a landing page rather than a
+direct PDF link.
+**Reasoning:** The shape check guards discovery output, where a malformed
+bitstream URL is a defect. A manual retrieval URL records where a human actually
+got the file; rewriting it into a direct link that was never used would make the
+record less true, not more.
+
+## [2026-11-15: 11:30:00] UPER 2024 is a funding instrument, not a screening one
+**Decision:** The Upstream Petroleum Environmental Remediation Fund Regulations
+2024 are registered and retained, but contribute no screening values. Screening
+instruments remain EGASPIN 2002 (primary) and EGASPIN 2018 (comparison).
+**Reasoning:** Verification of the file shows a 13-page gazetted regulation
+establishing the Environmental Remediation Fund, with contribution rates as its
+only table and no target or intervention values. It is the only official
+NUPRC-hosted source in the manifest and bears directly on Build 3's cost basis,
+which is flagged as the ramp's largest open risk.
+
+## [2026-11-15: 11:30:00] No official EGASPIN is published by NUPRC
+**Decision:** The mirror copies stand as the registered sources. If the NUPRC
+email yields an official copy it supersedes them and the manifest is updated.
+**Reasoning:** NUPRC's site is a client-rendered app whose laws routes were
+enumerated from its own script bundle; no route, link text or filename contains
+"egaspin", and none contains both "environmental" and "guidelines". Four
+guideline pages served no links and are inconclusive. The UPER regulation was
+found on the gazetted-regulations route, confirming the search method works
+where documents exist.
