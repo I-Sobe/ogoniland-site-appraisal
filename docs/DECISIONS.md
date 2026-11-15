@@ -301,3 +301,80 @@ enumerated from its own script bundle; no route, link text or filename contains
 guideline pages served no links and are inconclusive. The UPER regulation was
 found on the gazetted-regulations route, confirming the search method works
 where documents exist.
+
+## [2026-11-15: 12:40:00] Screening thresholds sourced to Table VIII-F1
+**Decision:** The delineation diagnostic screens against the mineral oil row of
+Table VIII-F1, EGASPIN 2002: soil/sediment intervention 5,000 mg/kg, target
+50 mg/kg; groundwater intervention 600 µg/l, target 50 µg/l. Closure is
+assessed against the intervention value, per Part VIII F section 6.6.
+**Reasoning:** The 5,000 mg/kg figure cited throughout the literature is the
+intervention value for mineral oil in section E of the table, not a separate
+closure provision. Section 6.6 requires intervention values to be demonstrated
+at the point of compliance, which is the regulatory basis for treating an
+unbounded site as uncloseable.
+**Supersedes:** the 2026-11-15 entry "The diagnostic keys off the intervention
+value" in its account of where the two figures come from. Both are the same row
+of the same table; they are not contradictory provisions. The decision to screen
+against the intervention value stands, now for a sourced reason.
+
+## [2026-11-15: 12:40:00] UNEP's TPH is mapped to EGASPIN's mineral oil
+**Decision:** UNEP's reported TPH values are screened against EGASPIN's mineral
+oil criteria. The mapping is recorded as a labelled assumption in the screening
+module, not as an equivalence.
+**Reasoning:** EGASPIN specifies mineral oil, conventionally a defined GC-FID
+carbon range; UNEP reports TPH, whose definition varies by analytical method.
+No other EGASPIN determinand corresponds to UNEP's primary measurement, so the
+mapping is necessary, but it is an interpretation and the standing rule requires
+assumptions to be labelled in code.
+**Rejected:** treating the two as identical without comment; declining to screen
+TPH at all, which would remove the project's primary determinand.
+
+## [2026-11-15: 12:40:00] Table VIII-F1 row alignment is shifted
+**Decision:** Transcription of Table VIII-F1 reads substance labels as sitting
+one row below their values. Every transcribed row is checked against the Dutch
+intervention values it derives from before entering screening_values.csv.
+**Reasoning:** In the printed table the category header line carries the first
+substance's values and Zinc has none, so an unshifted reading assigns every
+metal the wrong value while still looking plausible. The shifted reading returns
+chemically correct values throughout. Section E does not shift, having a single
+substance.
+
+## [2026-11-15: 19:15:00] screening_values.csv gains three columns
+**Decision:** The schema becomes determinand, printed_determinand, medium,
+target_value, intervention_value, unit, qualifier, basis, instrument, citation.
+One row per determinand per medium; a medium with no published value gets no
+row, and a missing value is empty rather than zero.
+**Reasoning:** EGASPIN's `(dt)` marks a value as a detection threshold rather
+than a concentration, which changes how it is compared and would otherwise be
+lost. The printed names carry typographic errors that must be preserved for a
+reader checking the page while code joins on a normalised name. Every soil value
+is normalised to a standard soil of 10% organic matter and 25% clay, and the
+screening module must know that to decide whether the soil-type correction
+applies.
+**Supersedes:** the `screening_values` schema in Part 3 of the setup pack.
+**Rejected:** encoding the qualifier inside the value as text (breaks numeric
+comparison); recording zero for an unspecified value (asserts a limit the
+regulation does not set).
+## [2026-11-15: 22:45:00] Table VIII-F1 section D shifts two rows, not one
+**Decision:** In the PAH block, values sit two rows above their substance label,
+not one. PAH (Total of 10) carries the soil pair 1 and 40 mg/kg and no
+groundwater values; the five named PAHs carry groundwater values only.
+**Reasoning:** The groundwater pairs 0.1/70, 0.02/5, 0.02/5, 0.005/1 and
+0.002/0.5 match the Dutch values for naphthalene, anthracene, phenanthrene,
+fluoranthene and benzo(a)anthracene exactly. A one-row shift would assign the
+PAH-total soil values to naphthalene and leave the last named PAH unvalued.
+**Supersedes:** the 2026-11-15 entry "Table VIII-F1 row alignment is shifted",
+which stated a uniform one-row shift. Sections A, B and C shift by one; section
+D shifts by two; section E does not shift.
+**Rejected:** applying a uniform shift across all sections (misassigns the PAH
+soil values and loses the PAH-total row).
+
+## [2026-11-15: 22:45:00] Determinand keys are normalised; printed names preserved
+**Decision:** `determinand` carries the correct chemical name; the printed form,
+including EGASPIN's typographic errors, is preserved in `printed_determinand`.
+A medium with no published value gets no row rather than a row with a dash.
+**Reasoning:** The key is what sample data joins against, so carrying "pnenol"
+or "napthalene" into it would propagate a typesetting error through the
+screening module. The printed form is what a reader checking the page sees, so
+both are needed. A dash in a numeric column is a string, which is the failure
+the empty-not-zero rule exists to prevent.
