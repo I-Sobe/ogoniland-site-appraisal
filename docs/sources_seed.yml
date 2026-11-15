@@ -794,3 +794,42 @@ documents:
     bitstream_uuid: "5a76944f-9a0c-4168-a490-44fe7bd46e42"
     local_filename: "ogoniland_chap7.pdf"
     discovered_from: "https://wedocs.unep.org/items/e8da6428-f026-4052-aac5-fce108cf6e23"
+  - doc_id: "regulation_egaspin_2002"
+    title: "ENVIRONMENTAL GUIDELINES AND STANDARDS FOR THE PETROLEUM INDUSTRY IN NIGERIA (EGASPIN)"
+    publisher: "Department of Petroleum Resources"
+    year: 2002
+    kind: "regulation"
+    url: "https://www.aziza.com.ng/wp-content/uploads/2020/06/environmental-guidelines-and-standards-for-the-petroleum-industry-in-nigeria-egaspin-2002.pdf"
+    item_uuid: null
+    bitstream_uuid: null
+    local_filename: "environmental-guidelines-and-standards-for-the-petroleum-industry-in-nigeria-egaspin-2002.pdf"
+    discovered_from: "https://www.aziza.com.ng/wp-content/uploads/2020/06/environmental-guidelines-and-standards-for-the-petroleum-industry-in-nigeria-egaspin-2002.pdf"
+    retrieval_method: "manual"
+    retrieved_date: "2026-11-14"
+    provenance_note: "Third-party mirror; no official DPR or NUPRC copy located. Manually retrieved."
+  - doc_id: "regulation_egaspin_2018"
+    title: "ENVIRONMENTAL GUIDELINES AND STANDARDS FOR THE PETROLEUM INDUSTRY IN NIGERIA (EGASPIN)"
+    publisher: "Department of Petroleum Resources"
+    year: 2018
+    kind: "regulation"
+    url: "https://pdfcoffee.com/dpr-egaspin-2018-pdf-free.html"
+    item_uuid: null
+    bitstream_uuid: null
+    local_filename: "dpr-egaspin-2018-pdf-free.pdf"
+    discovered_from: "https://pdfcoffee.com/dpr-egaspin-2018-pdf-free.html"
+    retrieval_method: "manual"
+    retrieved_date: "2026-11-15"
+    provenance_note: "Document-sharing site; weakest provenance in this manifest. Unverified against an official copy. Manually retrieved."
+  - doc_id: "regulation_uper_2024"
+    title: "UPSTREAM PETROLEUM ENVIRONMENTAL REMEDIATION FUND REGULATIONS, 2024"
+    publisher: "Nigerian Upstream Petroleum Regulatory Commission"
+    year: 2024
+    kind: "regulation"
+    url: "https://nuprc.gov.ng/upload/nuprc_laws/Nigerian_Upstream_Petroleum_Environmental_Remediation_Regulations_2024_981b03c9dc2fad23436bdfe2.pdf"
+    item_uuid: null
+    bitstream_uuid: null
+    local_filename: "Nigerian_Upstream_Petroleum_Environmental_Remediation_Regulations_2024_981b03c9dc2fad23436bdfe2.pdf"
+    discovered_from: "https://nuprc.gov.ng/upload/nuprc_laws/Nigerian_Upstream_Petroleum_Environmental_Remediation_Regulations_2024_981b03c9dc2fad23436bdfe2.pdf"
+    retrieval_method: "manual"
+    retrieved_date: "2026-11-14"
+    provenance_note: "Official NUPRC-hosted source. Manually retrieved."

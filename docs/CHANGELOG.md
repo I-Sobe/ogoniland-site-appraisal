@@ -47,3 +47,14 @@ Each entry follows the format: `## [YYYY-MM-DD] Session N — title`, then **Cha
 **Changed:** docs/CHANGELOG.md — this entry
 **Untested:** Behaviour on a real fresh clone was simulated by moving the PDFs out of data/raw/, not by cloning.
 **Surprised:** Renaming data/raw/ away entirely fails tests/test_structure.py test_1 (it requires the directory, which a real clone keeps via .gitkeep); the faithful case, PDFs removed with .gitkeep kept, passes with one skip.
+
+## [2026-11-15: 11:32:56] Session 4 — Verify and register regulatory sources
+**Changed:** src/ogoniland_appraisal/sources/verify_docs.py — created; pdftotext-based string location for the three regulatory PDFs (no tables extracted, no values written)
+**Changed:** src/ogoniland_appraisal/sources/fetch.py — entries with retrieval_method "manual" are hashed in place and never downloaded; manifest keeps all seed fields; SOURCES.md gains a regulatory-sources section
+**Changed:** docs/sources_seed.yml — three regulation entries appended (regulation_egaspin_2002, regulation_egaspin_2018, regulation_uper_2024)
+**Changed:** docs/sources_manifest.json, docs/SOURCES.md — regenerated; 82 documents, the 79 earlier sha256 values unchanged
+**Changed:** tests/test_manifest.py — nulls allowed only for regulation UUIDs; regulation provenance and null-UUID-only-on-regulation tests added
+**Changed:** tests/test_seed.py — regulation-aware key, UUID and URL-shape checks; nulls excluded from UUID uniqueness; unique-url test added
+**Changed:** data/raw/ — stray duplicate "-Environmental Assessment of Ogoniland-2011UNEP_OEA.pdf" deleted after its sha256 matched report_main (not tracked)
+**Untested:** NUPRC pages /laws/guidelines, /laws/guidelines/cssa, /laws/guidelines/nuprc and /laws/menu served no links, so the egaspin search of them is inconclusive. Part VIII letters come from the PDF text layer and may miss letters it renders differently. EGASPIN text was not checked for 5000/5,000 outside 200 characters of "intervention".
+**Surprised:** tests/test_seed.py was outside the spec's file list, and registering regulations changed the seed contract it enforces (null UUIDs, extra keys, non-bitstream URLs); it was added by amendment. The file named "Upstream Petroleum Environmental Remediation Regulations, 2024" is titled on its own page "Upstream Petroleum Environmental Remediation Fund Regulations, 2024" and is a fund-contribution regulation with no target or intervention values. No EGASPIN copy is published on nuprc.gov.ng. retrieved_utc for the three manual entries holds the date only.

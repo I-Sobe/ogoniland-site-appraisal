@@ -11,6 +11,11 @@ KEYS = ["doc_id", "title", "publisher", "year", "kind", "url", "item_uuid",
         "bitstream_uuid", "local_filename", "discovered_from"]
 
 
+REGULATION_KEYS = ["doc_id", "title", "publisher", "year", "kind", "url", "item_uuid",
+                   "bitstream_uuid", "local_filename", "discovered_from",
+                   "retrieval_method", "retrieved_date", "provenance_note"]
+
+
 def read_seed(path):
     """Minimal reader for the seed format: `  - key: <json>` / `    key: <json>`."""
     entries = []
@@ -61,6 +66,14 @@ class TestSeed(unittest.TestCase):
 
     def test_4_keys_and_nulls(self):
         for e in self.entries:
+            if e["kind"] == "regulation":
+                for k in REGULATION_KEYS:
+                    self.assertIn(k, e, e["doc_id"])
+                    if k not in ("item_uuid", "bitstream_uuid"):
+                        self.assertIsNotNone(e[k], f"{e['doc_id']}.{k}")
+                self.assertIsNone(e["item_uuid"], e["doc_id"])
+                self.assertIsNone(e["bitstream_uuid"], e["doc_id"])
+                continue
             self.assertEqual(list(e), KEYS, e.get("doc_id"))
             for k, v in e.items():
                 if k != "year":
@@ -70,9 +83,10 @@ class TestSeed(unittest.TestCase):
         uuid = re.compile(r"^[0-9a-f-]{36}$")
         for e in self.entries:
             self.assertTrue(e["url"].startswith("https://"), e["doc_id"])
-            self.assertTrue("/bitstreams/" in e["url"] or e["url"].endswith(".pdf"), e["doc_id"])
-            self.assertRegex(e["item_uuid"], uuid)
-            self.assertRegex(e["bitstream_uuid"], uuid)
+            if e["kind"] != "regulation":
+                self.assertTrue("/bitstreams/" in e["url"] or e["url"].endswith(".pdf"), e["doc_id"])
+                self.assertRegex(e["item_uuid"], uuid)
+                self.assertRegex(e["bitstream_uuid"], uuid)
 
     def test_6_unique(self):
         ids = [e["doc_id"] for e in self.entries]
@@ -86,12 +100,16 @@ class TestSeed(unittest.TestCase):
 
     def test_10_unique_uuids(self):
         for key in ("item_uuid", "bitstream_uuid"):
-            vals = [e[key] for e in self.entries]
+            vals = [e[key] for e in self.entries if e[key] is not None]
             self.assertEqual(len(vals), len(set(vals)), key)
 
     def test_9_unique_filenames(self):
         fns = [e["local_filename"] for e in self.entries]
         self.assertEqual(len(fns), len(set(fns)))
+
+    def test_11_unique_urls(self):
+        urls = [e["url"] for e in self.entries]
+        self.assertEqual(len(urls), len(set(urls)))
 
 
 if __name__ == "__main__":

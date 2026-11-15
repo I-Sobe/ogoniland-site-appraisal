@@ -30,7 +30,10 @@ class TestManifest(unittest.TestCase):
         for d in self.docs:
             for k in SEED_KEYS + EXTRA:
                 self.assertIn(k, d, d.get("doc_id"))
-                if k != "year":
+                nullable = {"year"}
+                if d.get("kind") == "regulation":
+                    nullable |= {"item_uuid", "bitstream_uuid"}
+                if k not in nullable:
                     self.assertIsNotNone(d[k], f"{d['doc_id']}.{k}")
         self.assertEqual([d["doc_id"] for d in self.docs], sorted(d["doc_id"] for d in self.docs))
 
@@ -44,8 +47,19 @@ class TestManifest(unittest.TestCase):
 
     def test_4_unique(self):
         for k in ("doc_id", "local_filename", "item_uuid", "bitstream_uuid"):
-            vals = [d[k] for d in self.docs]
+            vals = [d[k] for d in self.docs if d[k] is not None]
             self.assertEqual(len(vals), len(set(vals)), k)
+
+    def test_4b_null_uuids_only_on_regulations(self):
+        for d in self.docs:
+            if d["item_uuid"] is None or d["bitstream_uuid"] is None:
+                self.assertEqual(d["kind"], "regulation", d["doc_id"])
+
+    def test_4c_regulation_provenance_fields(self):
+        for d in self.docs:
+            if d["kind"] == "regulation":
+                for k in ("retrieval_method", "retrieved_date", "provenance_note"):
+                    self.assertTrue(d.get(k), f"{d['doc_id']}.{k}")
 
     def test_5_sources_md_rows(self):
         rows = [l for l in SOURCES_MD.read_text(encoding="utf-8").splitlines()

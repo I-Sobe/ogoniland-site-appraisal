@@ -16,7 +16,7 @@ from pathlib import Path
 
 import requests
 
-from .discover import KEYS, USER_AGENT as _DISCOVER_UA, _read_seed
+from .discover import USER_AGENT as _DISCOVER_UA, _read_seed
 
 USER_AGENT = _DISCOVER_UA.replace("source-discovery", "source-fetch")
 SLEEP_SECONDS = 1.0
@@ -91,6 +91,13 @@ def _write_sources_md(path, docs, generated):
             cell(d["doc_id"]), cell(d["title"]), "" if d["year"] is None else str(d["year"]),
             cell(d["url"]), d["sha256"][:16], cell(d["local_filename"]), str(d["bytes"]),
         ]) + " |")
+    regs = [d for d in docs if d.get("kind") == "regulation"]
+    if regs:
+        out += ["", "## Regulatory sources", ""]
+        for d in regs:
+            out.append(f"- **{d['doc_id']}** ({d['year']}): {d['title']}. {d['provenance_note']}")
+        manual_ids = ", ".join(d["doc_id"] for d in docs if d.get("retrieval_method") == "manual")
+        out += ["", f"Manually retrieved (not fetched by script): {manual_ids}."]
     with open(path, "w", encoding="utf-8", newline="\n") as fh:
         fh.write("\n".join(out) + "\n")
 
@@ -142,6 +149,24 @@ def duplicate_pair_report(docs):
     return rows
 
 
+def _register_manual(e, dest, prior):
+    """Hash a manually retrieved file already in raw_dir; never download or touch it."""
+    if not dest.is_file():
+        raise FetchStop(f"{e['doc_id']}: manually retrieved file missing: {dest}")
+    with open(dest, "rb") as fh:
+        head = fh.read(4)
+    if head != b"%PDF":
+        raise FetchStop(f"{e['doc_id']}: file does not begin with %PDF (got {head!r})")
+    size = dest.stat().st_size
+    if size < MIN_BYTES:
+        raise FetchStop(f"{e['doc_id']}: file is {size} bytes, under 10 KB")
+    digest = _sha256(dest)
+    if prior and prior["sha256"] != digest:
+        raise FetchStop(f"{e['doc_id']}: {dest} sha256 differs from manifest")
+    # retrieved_utc carries the date given for the manual retrieval (no time is known).
+    return {**e, "sha256": digest, "bytes": size, "retrieved_utc": e["retrieved_date"]}
+
+
 def fetch_all(seed_path, raw_dir, manifest_path) -> dict:
     seed = _read_seed(Path(seed_path))
     raw = Path(raw_dir)
@@ -153,11 +178,16 @@ def fetch_all(seed_path, raw_dir, manifest_path) -> dict:
 
     existing = _load_manifest(manifest_path)
     dl = _Downloader()
-    docs, downloaded, skipped, bytes_dl = {}, [], [], 0
+    docs, downloaded, skipped, manual, bytes_dl = {}, [], [], [], 0
 
     for e in sorted(seed, key=lambda e: e["doc_id"]):
         dest = raw / e["local_filename"]
         prior = existing.get(e["doc_id"])
+        if e.get("retrieval_method") == "manual":
+            # Manually retrieved: never downloaded here, only hashed in place.
+            docs[e["doc_id"]] = _register_manual(e, dest, prior)
+            manual.append(e["doc_id"])
+            continue
         if dest.is_file() and prior:
             if _sha256(dest) != prior["sha256"]:
                 raise FetchStop(f"{e['doc_id']}: {dest} sha256 differs from manifest")
@@ -179,8 +209,7 @@ def fetch_all(seed_path, raw_dir, manifest_path) -> dict:
         finally:
             if part.exists():
                 part.unlink()
-        docs[e["doc_id"]] = {**{k: e[k] for k in KEYS}, "sha256": digest, "bytes": size,
-                             "retrieved_utc": _now()}
+        docs[e["doc_id"]] = {**e, "sha256": digest, "bytes": size, "retrieved_utc": _now()}
         downloaded.append(e["doc_id"])
         bytes_dl += size
         _write_manifest(manifest_path, list(docs.values()))  # incremental, resumable
@@ -188,7 +217,7 @@ def fetch_all(seed_path, raw_dir, manifest_path) -> dict:
     final = _write_manifest(manifest_path, list(docs.values()))
     generated = _now()
     _write_sources_md(Path(manifest_path).parent / SOURCES_MD, final, generated)
-    return {"n_documents": len(final), "downloaded": len(downloaded), "skipped": len(skipped),
+    return {"n_documents": len(final), "downloaded": len(downloaded), "skipped": len(skipped), "manual": len(manual),
             "bytes_downloaded": bytes_dl, "retries": dl.retries,
             "duplicate_pairs": duplicate_pair_report(final)}
 
